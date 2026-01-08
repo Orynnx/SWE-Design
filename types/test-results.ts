@@ -4,14 +4,14 @@ export interface HttpRequest {
   method: string;
   url: string;
   headers?: Record<string, string>;
-  body?: any;
+  body?: Record<string, unknown>;
 }
 
 export interface HttpResponse {
   status: number;
   statusText: string;
   headers?: Record<string, string>;
-  body?: any;
+  body?: Record<string, unknown>;
 }
 
 export interface TestCase {

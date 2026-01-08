@@ -38,6 +38,30 @@ export const mockTestResults: TestResult = {
           actualOutput: '系统正确拦截请求，返回错误提示："AI 服务额度已耗尽或订阅过期，请联系管理员"',
           status: 'passed',
           executionTime: 156,
+          request: {
+            method: 'POST',
+            url: '/api/submissions/sub-67890/grade',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              submissionId: 'sub-67890',
+              useAI: true,
+            },
+          },
+          response: {
+            status: 403,
+            statusText: 'Forbidden',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: false,
+              error: 'AI 服务额度已耗尽或订阅过期，请联系管理员',
+              code: 'AI_TOKEN_EXHAUSTED',
+            },
+          },
         },
         {
           id: 'test-1-2',
@@ -55,6 +79,38 @@ export const mockTestResults: TestResult = {
           actualOutput: 'Zod 验证正确拦截，显示错误："文件格式必须为 CSV"',
           status: 'passed',
           executionTime: 89,
+          request: {
+            method: 'POST',
+            url: '/api/admin/users/import',
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              file: {
+                name: 'users.txt',
+                type: 'text/plain',
+                size: 1024,
+              },
+            },
+          },
+          response: {
+            status: 400,
+            statusText: 'Bad Request',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: false,
+              error: '文件格式必须为 CSV',
+              code: 'INVALID_FILE_FORMAT',
+              details: {
+                field: 'file',
+                expected: 'text/csv',
+                received: 'text/plain',
+              },
+            },
+          },
         },
         {
           id: 'test-1-3',
@@ -72,6 +128,31 @@ export const mockTestResults: TestResult = {
           actualOutput: '用户无法登录，显示："账号已被封禁"，已登录用户被重定向至 /unauthorized',
           status: 'passed',
           executionTime: 234,
+          request: {
+            method: 'POST',
+            url: '/api/auth/callback/credentials',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              email: 'banned_user@example.com',
+              password: 'password123',
+              csrfToken: 'csrf-token-here',
+            },
+          },
+          response: {
+            status: 401,
+            statusText: 'Unauthorized',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: false,
+              error: '账号已被封禁',
+              code: 'USER_BANNED',
+              redirectTo: '/unauthorized',
+            },
+          },
         },
       ],
     },
@@ -91,6 +172,37 @@ export const mockTestResults: TestResult = {
           actualOutput: '登录成功，跳转至 /teacher/dashboard',
           status: 'passed',
           executionTime: 345,
+          request: {
+            method: 'POST',
+            url: '/api/auth/callback/credentials',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              email: 'test@example.com',
+              password: 'correct_password',
+              csrfToken: 'csrf-token-here',
+            },
+          },
+          response: {
+            status: 200,
+            statusText: 'OK',
+            headers: {
+              'Content-Type': 'application/json',
+              'Set-Cookie': 'next-auth.session-token=...; Path=/; HttpOnly; Secure',
+            },
+            body: {
+              success: true,
+              user: {
+                id: 'user-123',
+                name: '张老师',
+                email: 'test@example.com',
+                role: 'TEACHER',
+                organizationId: 'org-456',
+              },
+              redirectTo: '/teacher/dashboard',
+            },
+          },
         },
         {
           id: 'test-2-2',
@@ -102,6 +214,30 @@ export const mockTestResults: TestResult = {
           actualOutput: '提示"登录失败：Invalid credentials"',
           status: 'passed',
           executionTime: 198,
+          request: {
+            method: 'POST',
+            url: '/api/auth/callback/credentials',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              email: 'test@example.com',
+              password: 'wrong_password',
+              csrfToken: 'csrf-token-here',
+            },
+          },
+          response: {
+            status: 401,
+            statusText: 'Unauthorized',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: false,
+              error: 'Invalid credentials',
+              code: 'INVALID_CREDENTIALS',
+            },
+          },
         },
         {
           id: 'test-2-3',
@@ -143,6 +279,39 @@ export const mockTestResults: TestResult = {
           actualOutput: '组织创建成功，ID: org-12345',
           status: 'passed',
           executionTime: 234,
+          request: {
+            method: 'POST',
+            url: '/api/admin/organizations',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              name: '江南大学',
+              domain: '@jiangnan.edu.cn',
+              aiTokenLimit: 100000,
+              aiSubStatus: 'ACTIVE',
+            },
+          },
+          response: {
+            status: 201,
+            statusText: 'Created',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: true,
+              data: {
+                id: 'org-12345',
+                name: '江南大学',
+                domain: '@jiangnan.edu.cn',
+                aiTokenLimit: 100000,
+                aiTokenUsage: 0,
+                aiSubStatus: 'ACTIVE',
+                createdAt: '2026-01-08T08:40:30Z',
+              },
+            },
+          },
         },
         {
           id: 'test-3-2',
@@ -195,6 +364,39 @@ export const mockTestResults: TestResult = {
           actualOutput: '课程创建成功，ID: course-12345',
           status: 'passed',
           executionTime: 267,
+          request: {
+            method: 'POST',
+            url: '/api/teacher/courses',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              name: '软件工程2024',
+              code: 'SE101',
+              description: '软件工程基础课程',
+            },
+          },
+          response: {
+            status: 201,
+            statusText: 'Created',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: true,
+              data: {
+                id: 'course-12345',
+                name: '软件工程2024',
+                code: 'SE101',
+                description: '软件工程基础课程',
+                teacherId: 'user-123',
+                organizationId: 'org-456',
+                archived: false,
+                createdAt: '2026-01-08T08:40:32Z',
+              },
+            },
+          },
         },
         {
           id: 'test-4-2',
@@ -247,6 +449,38 @@ export const mockTestResults: TestResult = {
           actualOutput: 'Submission 创建成功，ID: sub-12345',
           status: 'passed',
           executionTime: 234,
+          request: {
+            method: 'POST',
+            url: '/api/student/assignments/assign-789/submit',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              assignmentId: 'assign-789',
+              content: '这是我的作业内容...\n\n实现了所有要求的功能：\n1. 用户认证\n2. 数据库设计\n3. API接口实现',
+              fileUrls: ['https://storage.example.com/files/homework-123.pdf'],
+            },
+          },
+          response: {
+            status: 201,
+            statusText: 'Created',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: true,
+              data: {
+                id: 'sub-12345',
+                assignmentId: 'assign-789',
+                studentId: 'user-456',
+                content: '这是我的作业内容...',
+                fileUrls: ['https://storage.example.com/files/homework-123.pdf'],
+                status: 'SUBMITTED',
+                submittedAt: '2026-01-08T08:40:33Z',
+              },
+            },
+          },
         },
         {
           id: 'test-5-2',
@@ -258,6 +492,47 @@ export const mockTestResults: TestResult = {
           actualOutput: '评分: 85, 反馈: "优点：逻辑清晰... 不足：缺少异常处理..."',
           status: 'passed',
           executionTime: 1245,
+          request: {
+            method: 'POST',
+            url: '/api/teacher/submissions/sub-12345/grade',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              submissionId: 'sub-12345',
+              useAI: true,
+            },
+          },
+          response: {
+            status: 200,
+            statusText: 'OK',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: true,
+              data: {
+                submissionId: 'sub-12345',
+                score: 85,
+                aiAnalysis: {
+                  strengths: [
+                    '代码逻辑清晰，结构合理',
+                    '遵循了良好的命名规范',
+                    '注释完整，易于理解',
+                  ],
+                  weaknesses: [
+                    '缺少异常处理机制',
+                    '部分函数可以进一步优化',
+                  ],
+                  suggestion: '建议增加错误处理和输入验证，提高代码健壮性',
+                },
+                status: 'GRADED',
+                tokenUsed: 1250,
+                gradedAt: '2026-01-08T08:40:34Z',
+              },
+            },
+          },
         },
         {
           id: 'test-5-3',
@@ -270,6 +545,35 @@ export const mockTestResults: TestResult = {
           status: 'failed',
           executionTime: 89,
           error: '实现中未完全阻止截止后提交，需要修复',
+          request: {
+            method: 'POST',
+            url: '/api/student/assignments/assign-999/submit',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+            },
+            body: {
+              assignmentId: 'assign-999',
+              content: '迟交的作业内容',
+              fileUrls: [],
+            },
+          },
+          response: {
+            status: 400,
+            statusText: 'Bad Request',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: false,
+              error: '作业已截止',
+              code: 'ASSIGNMENT_EXPIRED',
+              details: {
+                deadline: '2026-01-07T23:59:59Z',
+                currentTime: '2026-01-08T08:40:35Z',
+              },
+            },
+          },
         },
         {
           id: 'test-5-4',
@@ -300,6 +604,31 @@ export const mockTestResults: TestResult = {
           actualOutput: '登录失败，SQL 注入被 Prisma 阻止',
           status: 'passed',
           executionTime: 178,
+          request: {
+            method: 'POST',
+            url: '/api/auth/callback/credentials',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              email: "admin' OR '1'='1",
+              password: 'anything',
+              csrfToken: 'csrf-token-here',
+            },
+          },
+          response: {
+            status: 401,
+            statusText: 'Unauthorized',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: {
+              success: false,
+              error: 'Invalid credentials',
+              code: 'INVALID_CREDENTIALS',
+              note: 'SQL injection attempt detected and blocked by Prisma ORM',
+            },
+          },
         },
         {
           id: 'test-6-2',

@@ -267,6 +267,73 @@ function TestCaseDetail({ test }: { test: TestCase }) {
 
           {expanded && (
             <div className="space-y-4 pt-4 border-t">
+              {test.request && (
+                <div>
+                  <h5 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                    请求 Payload (Request)
+                  </h5>
+                  <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900 rounded-lg p-4 text-sm">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-purple-700 dark:text-purple-300">{test.request.method}</span>
+                        <code className="text-xs bg-purple-100 dark:bg-purple-900/50 px-2 py-1 rounded">{test.request.url}</code>
+                      </div>
+                      {test.request.headers && (
+                        <div className="mt-2">
+                          <span className="text-xs font-semibold text-muted-foreground">Headers:</span>
+                          <pre className="mt-1 text-xs bg-slate-100 dark:bg-slate-900 p-2 rounded overflow-x-auto">
+                            {JSON.stringify(test.request.headers, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                      {test.request.body && (
+                        <div className="mt-2">
+                          <span className="text-xs font-semibold text-muted-foreground">Body:</span>
+                          <pre className="mt-1 text-xs bg-slate-100 dark:bg-slate-900 p-2 rounded overflow-x-auto">
+                            {JSON.stringify(test.request.body, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {test.response && (
+                <div>
+                  <h5 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${test.status === "passed" ? "bg-green-500" : "bg-orange-500"}`}></span>
+                    响应 Response
+                  </h5>
+                  <div className={`${test.status === "passed" ? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-900" : "bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-900"} border rounded-lg p-4 text-sm`}>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`font-semibold ${test.status === "passed" ? "text-green-700 dark:text-green-300" : "text-orange-700 dark:text-orange-300"}`}>
+                          {test.response.status} {test.response.statusText}
+                        </span>
+                      </div>
+                      {test.response.headers && (
+                        <div className="mt-2">
+                          <span className="text-xs font-semibold text-muted-foreground">Headers:</span>
+                          <pre className="mt-1 text-xs bg-slate-100 dark:bg-slate-900 p-2 rounded overflow-x-auto">
+                            {JSON.stringify(test.response.headers, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                      {test.response.body && (
+                        <div className="mt-2">
+                          <span className="text-xs font-semibold text-muted-foreground">Body:</span>
+                          <pre className="mt-1 text-xs bg-slate-100 dark:bg-slate-900 p-2 rounded overflow-x-auto">
+                            {JSON.stringify(test.response.body, null, 2)}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <h5 className="font-semibold text-sm mb-2 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500"></span>

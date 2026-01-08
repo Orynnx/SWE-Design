@@ -1,5 +1,19 @@
 export type TestStatus = 'passed' | 'failed' | 'skipped';
 
+export interface HttpRequest {
+  method: string;
+  url: string;
+  headers?: Record<string, string>;
+  body?: any;
+}
+
+export interface HttpResponse {
+  status: number;
+  statusText: string;
+  headers?: Record<string, string>;
+  body?: any;
+}
+
 export interface TestCase {
   id: string;
   name: string;
@@ -12,6 +26,8 @@ export interface TestCase {
   executionTime?: number;
   screenshot?: string;
   error?: string;
+  request?: HttpRequest;
+  response?: HttpResponse;
 }
 
 export interface TestSuite {
